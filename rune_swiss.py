@@ -322,14 +322,29 @@ def main():
     print("10 - Brute-force Decryption with User-Provided Key (Vigenère Cipher)")
     choice = input("Enter your choice (1-9): ")
 
-    if choice == '1':
-        text = input("Enter the text to transliterate to runes: ")
-        result = transliterate_to_futhark(text)
-        print(f"Transliterated text: {result}")
-    elif choice == '2':
-        runes = input("Enter the runes to transliterate to English: ")
-        result = transliterate_futhark(runes)
-        print(f"Transliterated English text: {result}")
+  if choice == '1':
+    print("Enter the English text to transliterate to runes (end with an empty line):")
+    lines = []
+    while True:
+        line = input()
+        if line == "":
+            break
+        lines.append(line)
+    text = ' '.join(lines)  # Joining lines with a space, assuming that's how you want to handle multi-line text
+    result = transliterate_to_futhark(text)
+    print(f"Transliterated text: {result}")   
+  elif choice == '2':
+        print("Enter the runes to transliterate to English (end with an empty line):")
+        lines = []
+        while True:
+            line = input()
+            if line == "":
+                break
+            lines.append(line)
+        runes = '/'.join(lines)
+        english_text, decimal_values = transliterate_and_convert(runes)
+        print(f"Transliterated English text: {english_text}")
+        print(f"Decimal values: {' '.join(decimal_values)}")
     elif choice == '3':
         runes = input("Enter the runes to decrypt with Atbash: ")
         shift = int(input("Enter the shift amount (0-28): "))
