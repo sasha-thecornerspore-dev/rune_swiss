@@ -17,7 +17,7 @@ To use the Rune Cipher Swiss Army Knife, follow these steps:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/your-username/rune-cipher-tool.git
+   git clone https://github.com/sasha-thecornerspore-dev/rune_swiss.git
 Navigate to the repository directory:
 cd rune-cipher-tool
 
