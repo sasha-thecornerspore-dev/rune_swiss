@@ -1,12 +1,43 @@
-# rune_swiss
-Rune Swiss Army Knife for Liber Primus
- Here’s a summary of its functionalities:
+# Rune Cipher Swiss Army Knife
 
-Transliteration: Converts text from Elder Futhark runes to English and vice versa.
-Atbash Cipher: Decrypts text encrypted with the Atbash cipher, which is a substitution cipher with a fixed letter mapping.
-Caesar Cipher: Encrypts and decrypts text using the Caesar cipher, a type of substitution cipher in which each letter in the plaintext is shifted a certain number of places down or up the alphabet.
-Vigenère Cipher: Decrypts text encrypted with the Vigenère cipher, which uses a keyword to determine the shift for each letter.
-Playfair Cipher: Encrypts and decrypts text using the Playfair cipher, which encrypts pairs of letters (digraphs), making it more difficult to break than traditional single-letter substitution ciphers.
-Brute Force Decryption: Attempts to decrypt text by trying various decryption methods with prime number shifts and user-provided keys or keywords.
-Coherence Checks: Includes two separate checks for English coherence—one for the direct transliteration and one for the decrypted texts from brute force attempts—to ensure the output is understandable in English.
-The script also provides a user interface that prompts the user to choose an operation from the listed cryptographic functions and enter the necessary information for the chosen operation. It’s designed to be a versatile tool for anyone interested in cryptography, particularly in the context of historical rune scripts.
+The Rune Cipher Swiss Army Knife is a versatile cryptographic tool designed to work with Elder Futhark runes. It provides functionalities for transliteration, encryption, decryption, and brute-force decryption attempts with various ciphers.
+
+## Features
+
+- Transliteration between Elder Futhark runes and English.
+- Encryption and decryption using Atbash, Caesar, and Vigenère ciphers.
+- Playfair cipher encryption and decryption.
+- Brute-force decryption with prime shifts and user-provided keys.
+- Coherence checks for transliterated and decrypted texts.
+
+## Installation
+
+To use the Rune Cipher Swiss Army Knife, follow these steps:
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/your-username/rune-cipher-tool.git
+Navigate to the repository directory:
+cd rune-cipher-tool
+
+Install dependencies: This script requires Python 3 and NLTK library. Ensure you have Python 3 installed on your system. You can download it from python.org. Install NLTK using pip:
+pip install nltk
+
+Run the script:
+python rune_cipher_tool.py
+Follow the on-screen prompts to select the operation you wish to perform.
+Usage
+After running the script, you will be prompted to choose an operation from the list of options. Enter the number corresponding to your choice and provide the necessary input when prompted.
+
+For example, to transliterate runes to English, select option 1 and enter the runes when prompted.
+
+Contributing
+Contributions to the Rune Cipher Swiss Army Knife are welcome. Please fork the repository, make your changes, and submit a pull request.
+
+License
+This project is licensed under the MIT License - see the LICENSE.md file for details.
+
+Acknowledgments
+This tool was developed using Microsoft Copilot by Jeffrey M. Schatz
+Special thanks to the Cicada 3301 community for their valuable feedback.
