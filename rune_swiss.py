@@ -1,4 +1,4 @@
-#!/usr/bin/env python3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         rune_swiss.py                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      #!/usr/bin/env python3
+#!/usr/bin/env python3                                                                                                                                                                                                                                                                                                                                                                                                                                                         rune_swiss.py                                                                                                                                                                                                                                                                                                                                                                                                                                                                    #!/usr/bin/env python3
 import nltk
 
 # Function to check and download necessary NLTK data
@@ -57,12 +57,30 @@ def transliterate_to_futhark(text):
     return transliterated_text
 
 # Function to transliterate runes to English and replace hyphens with spaces
-def transliterate_futhark(text):
-    # Convert the text from Elder Futhark runes to English
-    transliterated_text = ''.join(futhark_to_english.get(rune, rune) for rune in text)
-    # Replace hyphens with spaces
-    transliterated_text = transliterated_text.replace('-', ' ')
+def transliterate_futhark(runes):
+# Convert the runes from Elder Futhark to English
+    transliterated_text = ''
+    for rune in runes:
+        if rune in futhark_to_english:
+            transliterated_text += futhark_to_english[rune]
+        else:
+            transliterated_text += rune  # Non-mapped characters are kept as is
     return transliterated_text
+
+#Function to transliterate and convert
+def transliterate_and_convert(runes):
+    # Use the existing function to transliterate runes to English
+    english_text = transliterate_futhark(runes)
+    # Convert runes to decimal values
+    decimal_values = [str(rune_to_decimal.get(rune, '?')) for rune in runes]
+    # Return both the English transliteration and decimal values
+    return english_text, decimal_values
+
+# Example usage:
+runes = "ᚦᛖ-ᛚᚩᛋᛋ-ᚩᚠ-ᛞᛁᚢᛁᚾᛁᛏᚣ.ᚦᛖ-ᚳᛁᚱᚳᚢ"
+english_text, decimal_values = transliterate_and_convert(runes)
+print(f"Transliterated English text: {english_text}")
+print(f"Decimal values: {' '.join(decimal_values)}")
 
 # Function to decrypt Atbash cipher
 def decrypt_atbash(ciphertext, shift=0):
@@ -292,15 +310,16 @@ def brute_force_decrypt(runes, key=None, keyword=None):
 def main():
     print("Welcome to the Rune Cipher Swiss Army Knife!")
     print("Choose an operation from the following options:")
-    print("1 - Transliterate Runes to English (Transliteration)")
-    print("2 - Decrypt Runes with Atbash Cipher (Decryption)")
-    print("3 - Decrypt Runes with Vigenère Cipher (Decryption)")
-    print("4 - Encrypt Text with Caesar Cipher (Encryption)")
-    print("5 - Decrypt Text with Caesar Cipher (Decryption)")
-    print("6 - Encrypt Text with Playfair Cipher (Encryption)")
-    print("7 - Decrypt Text with Playfair Cipher (Decryption)")
-    print("8 - Brute-force Decryption with Prime Shifts (Decryption)")
-    print("9 - Brute-force Decryption with User-Provided Key (Vigenère Cipher)")
+    print("1 - Transliterate English to Runes (Transliteration)")
+    print("2 - Transliterate Runes to English")
+    print("3 - Decrypt Runes with Atbash Cipher (Decryption)")
+    print("4 - Decrypt Runes with Vigenère Cipher (Decryption)")
+    print("5 - Encrypt Text with Caesar Cipher (Encryption)")
+    print("6 - Decrypt Text with Caesar Cipher (Decryption)")
+    print("7 - Encrypt Text with Playfair Cipher (Encryption)")
+    print("8 - Decrypt Text with Playfair Cipher (Decryption)")
+    print("9 - Brute-force Decryption with Prime Shifts (Decryption)")
+    print("10 - Brute-force Decryption with User-Provided Key (Vigenère Cipher)")
     choice = input("Enter your choice (1-9): ")
 
     if choice == '1':
@@ -308,38 +327,42 @@ def main():
         result = transliterate_to_futhark(text)
         print(f"Transliterated text: {result}")
     elif choice == '2':
+        runes = input("Enter the runes to transliterate to English: ")
+        result = transliterate_futhark(runes)
+        print(f"Transliterated English text: {result}")
+    elif choice == '3':
         runes = input("Enter the runes to decrypt with Atbash: ")
         shift = int(input("Enter the shift amount (0-28): "))
         result = decrypt_atbash(runes, shift)
         print(f"Decrypted text: {result}")
-    elif choice == '3':
+    elif choice == '4':
         runes = input("Enter the runes to decrypt with Vigenère: ")
         key = input("Enter the Vigenère key (in runes): ")
         skip_indices_input = input("Enter indices to skip (comma-separated, no spaces): ")
         skip_indices = [int(index) for index in skip_indices_input.split(',')]
         result = decrypt_vigenere(runes, key, skip_indices)
         print(f"Decrypted text: {result}")
-    elif choice == '4':
+    elif choice == '5':
         text = input("Enter the text to encrypt with Caesar: ")
         shift = int(input("Enter the shift amount (0-25): "))
         result = encrypt_caesar(text, shift)
         print(f"Encrypted text: {result}")
-    elif choice == '5':
+    elif choice == '6':
         runes = input("Enter the runes to decrypt with Caesar: ")
         shift = int(input("Enter the shift amount (0-25): "))
         result = decrypt_caesar(runes, shift)
         print(f"Decrypted text: {result}")
-    elif choice == '6':
+    elif choice == '7':
         text = input("Enter the text to encrypt with Playfair: ")
         keyword = input("Enter the keyword for the Playfair cipher: ")
         result = encrypt_playfair(text, keyword)
         print(f"Encrypted text: {result}")
-    elif choice == '7':
+    elif choice == '8':
         runes = input("Enter the runes to decrypt with Playfair: ")
         keyword = input("Enter the keyword for the Playfair cipher: ")
         result = decrypt_playfair(runes, keyword)
         print(f"Decrypted text: {result}")
-    elif choice == '8':
+    elif choice == '9':
         runes = input("Enter the runes to decrypt: ")
         key = input("Enter the Vigenère key (in runes), or press Enter to skip: ")
         keyword = input("Enter the Playfair keyword (in English), or press Enter to skip: ")
@@ -350,7 +373,7 @@ def main():
         print(f"Decrypted message: {result}")
         print(f"Method used: {cipher}")
         print(f"Detail (shift, key, or keyword): {detail}")
-    elif choice == '9':
+    elif choice == '10':
         runes = input("Enter the runes to decrypt: ")
         key = input("Enter your key (in English or runes): ")
         # Convert English key to runes if necessary
