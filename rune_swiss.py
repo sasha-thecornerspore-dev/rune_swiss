@@ -320,6 +320,28 @@ def brute_force_decrypt(runes, key=None, keyword=None):
     best_result = min(possible_results, key=lambda x: englishness_score(x[0]), default=("No coherent result found", "None", None))
     return best_result
 
+def attempt_all_brute_force(runes):
+    # Generate prime numbers for shifts
+    primes = generate_primes(0, 100)
+    possible_results = []
+
+    # Attempt brute force for each cipher method
+    for prime in primes:
+        atbash_result = decrypt_atbash(runes, prime)
+        if is_coherent(atbash_result):
+            possible_results.append((atbash_result, 'Atbash', prime))
+
+        caesar_result = decrypt_caesar(runes, prime)
+        if is_coherent(caesar_result):
+            possible_results.append((caesar_result, 'Caesar', prime))
+
+    # Add more brute force attempts for other ciphers if available
+    # ...
+
+    # Choose the best result based on Englishness score or coherence
+    best_result = min(possible_results, key=lambda x: englishness_score(x[0]), default=("No coherent result found", "None", None))
+    return best_result
+
 # Main function with additional brute-force option
 def main():
     print("Welcome to the Rune Cipher Swiss Army Knife!")
@@ -334,6 +356,9 @@ def main():
     print("8 - Decrypt Text with Playfair Cipher (Decryption)")
     print("9 - Brute-force Decryption with Prime Shifts (Decryption)")
     print("10 - Brute-force Decryption with User-Provided Key (Vigenère Cipher)")
+    print("11 - Attempt All Brute Force Methods (Decryption)")
+    choice = input("Enter your choice (1-11): ")
+
     choice = input("Enter your choice (1-9): ")
 
     if choice == '1':
