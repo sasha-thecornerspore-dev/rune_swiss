@@ -1,4 +1,7 @@
- #!/usr/bin/env python3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               #!/usr/bin/env python3
+#!/usr/bin/env python3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               #!/usr/bin/env python3
+# Ensure you have NLTK data downloaded:
+# import nltk
+# nltk.download('words')
 import nltk
 
 # Function to check and download necessary NLTK data
@@ -20,11 +23,18 @@ import string
 from sympy import isprime, primerange
 from nltk.corpus import words
 from nltk.metrics.distance import edit_distance
+from math import gcd
 
-# Ensure you have NLTK data downloaded:
-# import nltk
-# nltk.download('words')
-
+def get_multiline_input(prompt):
+    print(prompt)
+    lines = []
+    while True:
+        line = input()
+        if line == "":
+            break
+        lines.append(line)
+    return ' '.join(lines)
+ 
 # Mapping of runes to decimal values based on the provided table
 rune_to_decimal = {
     'ᚠ': 0, 'ᚢ': 1, 'ᚦ': 2, 'ᚩ': 3, 'ᚱ': 4, 'ᚳ': 5, 'ᚷ': 6, 'ᚹ': 7, 'ᚻ': 8, 'ᚾ': 9, 'ᛁ': 10, 'ᛄ': 11,
@@ -47,13 +57,17 @@ english_to_futhark = {v: k for k, v in futhark_to_english.items()}
 
 # Function to transliterate text to runes
 def transliterate_to_futhark(text):
-    # Convert the text from English to Elder Futhark runes
+    # Create the reverse mapping from English to runes
+    english_to_futhark = {v: k for k, v in futhark_to_english.items()}
+    # Convert the text to uppercase to match the keys in the dictionary
+    text = text.upper()
+    # Transliterate the text to runes
     transliterated_text = ''
-    for char in text.upper():
+    for char in text:
         if char in english_to_futhark:
             transliterated_text += english_to_futhark[char]
         else:
-            transliterated_text += char
+            transliterated_text += char  # Non-mapped characters are kept as is
     return transliterated_text
 
 # Function to transliterate runes to English and replace hyphens with spaces
@@ -323,33 +337,27 @@ def main():
     choice = input("Enter your choice (1-9): ")
 
     if choice == '1':
-        print("Enter the English text to transliterate to runes (end with an empty line):")
-        lines = []
-        while True:
-            line = input()
-            if line == "":
-                break
-            lines.append(line)
-        text = ' '.join(lines)  # Joining lines with a space, assuming that's how you want to handle multi-line text
+        text = get_multiline_input("Enter the English text to transliterate to runes (end with an empty line):")
         result = transliterate_to_futhark(text)
         print(f"Transliterated text: {result}")
+
     elif choice == '2':
-        print("Enter the runes to transliterate to English (end with an empty line):")
-        lines = []
-        while True:
-            line = input()
-            if line == "":
-                break
-            lines.append(line)
-        runes = '/'.join(lines)
+        runes = get_multiline_input("Enter the runes to transliterate to English (end with an empty line):")
         english_text, decimal_values = transliterate_and_convert(runes)
         print(f"Transliterated English text: {english_text}")
         print(f"Decimal values: {' '.join(decimal_values)}")
+
     elif choice == '3':
         runes = input("Enter the runes to decrypt with Atbash: ")
-        shift = int(input("Enter the shift amount (0-28): "))
-        result = decrypt_atbash(runes, shift)
-        print(f"Decrypted text: {result}")
+        try:
+            shift = int(input("Enter the shift amount (0-28): "))
+            if not 0 <= shift <= 28:
+                raise ValueError("Shift must be between 0 and 28.")
+            result = decrypt_atbash(runes, shift)
+            print(f"Decrypted text: {result}")
+        except ValueError as e:
+            print(f"Invalid input: {e}")
+
     elif choice == '4':
         runes = input("Enter the runes to decrypt with Vigenère: ")
         key = input("Enter the Vigenère key (in runes): ")
@@ -357,45 +365,60 @@ def main():
         skip_indices = [int(index) for index in skip_indices_input.split(',')]
         result = decrypt_vigenere(runes, key, skip_indices)
         print(f"Decrypted text: {result}")
+
     elif choice == '5':
         text = input("Enter the text to encrypt with Caesar: ")
-        shift = int(input("Enter the shift amount (0-25): "))
-        result = encrypt_caesar(text, shift)
-        print(f"Encrypted text: {result}")
+        try:
+            shift = int(input("Enter the shift amount (0-25): "))
+            if not 0 <= shift <= 25:
+                raise ValueError("Shift must be between 0 and 25.")
+            result = encrypt_caesar(text, shift)
+            print(f"Encrypted text: {result}")
+        except ValueError as e:
+            print(f"Invalid input: {e}")
+
     elif choice == '6':
         runes = input("Enter the runes to decrypt with Caesar: ")
-        shift = int(input("Enter the shift amount (0-25): "))
-        result = decrypt_caesar(runes, shift)
-        print(f"Decrypted text: {result}")
+        try:
+            shift = int(input("Enter the shift amount (0-25): "))
+            if not 0 <= shift <= 25:
+                raise ValueError("Shift must be between 0 and 25.")
+            result = decrypt_caesar(runes, shift)
+            print(f"Decrypted text: {result}")
+        except ValueError as e:
+            print(f"Invalid input: {e}")
+
     elif choice == '7':
-        text = input("Enter the text to encrypt with Playfair: ")
+        text = get_multiline_input("Enter the text to encrypt with Playfair: ")
         keyword = input("Enter the keyword for the Playfair cipher: ")
         result = encrypt_playfair(text, keyword)
         print(f"Encrypted text: {result}")
+
     elif choice == '8':
-        runes = input("Enter the runes to decrypt with Playfair: ")
+        runes = get_multiline_input("Enter the runes to decrypt with Playfair: ")
         keyword = input("Enter the keyword for the Playfair cipher: ")
         result = decrypt_playfair(runes, keyword)
         print(f"Decrypted text: {result}")
+
     elif choice == '9':
-        runes = input("Enter the runes to decrypt: ")
+        runes = get_multiline_input("Enter the runes to decrypt: ")
         key = input("Enter the Vigenère key (in runes), or press Enter to skip: ")
         keyword = input("Enter the Playfair keyword (in English), or press Enter to skip: ")
-        # Convert English keyword to runes if necessary
         if keyword and not all(char in rune_to_decimal for char in keyword):
             keyword = transliterate_to_futhark(keyword)
         result, cipher, detail = brute_force_decrypt(runes, key, keyword)
         print(f"Decrypted message: {result}")
         print(f"Method used: {cipher}")
         print(f"Detail (shift, key, or keyword): {detail}")
+
     elif choice == '10':
-        runes = input("Enter the runes to decrypt: ")
+        runes = get_multiline_input("Enter the runes to decrypt: ")
         key = input("Enter your key (in English or runes): ")
-        # Convert English key to runes if necessary
         if not all(char in rune_to_decimal for char in key):
             key = transliterate_to_futhark(key)
         result = decrypt_vigenere(runes, key, [])
         print(f"Decrypted text: {result}")
-# This line calls the main function when the script is executed
+
+# Call the main function to start the program
 if __name__ == "__main__":
     main()
