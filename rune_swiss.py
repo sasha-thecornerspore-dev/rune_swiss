@@ -1,4 +1,23 @@
 #!/usr/bin/env python3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               #!/usr/bin/env python3
+import argparse
+
+# Create the parser
+parser = argparse.ArgumentParser(description='Rune Cipher Swiss Army Knife')
+
+# Add arguments for each operation
+parser.add_argument('-t', '--transliterate', metavar='TEXT', help='Transliterate English text to runes')
+parser.add_argument('-r', '--reverse-transliterate', metavar='RUNES', help='Transliterate runes to English text')
+parser.add_argument('-a', '--atbash', metavar=('RUNES', 'SHIFT'), nargs=2, help='Decrypt runes with Atbash cipher')
+parser.add_argument('-v', '--vigenere', metavar=('RUNES', 'KEY'), nargs=2, help='Decrypt runes with Vigenère cipher')
+parser.add_argument('-c', '--caesar-encrypt', metavar=('TEXT', 'SHIFT'), nargs=2, help='Encrypt text with Caesar cipher')
+parser.add_argument('-d', '--caesar-decrypt', metavar=('RUNES', 'SHIFT'), nargs=2, help='Decrypt runes with Caesar cipher')
+parser.add_argument('-p', '--playfair', metavar=('TEXT', 'KEYWORD'), nargs=2, help='Encrypt/Decrypt text with Playfair cipher')
+parser.add_argument('-b', '--brute-force', metavar='RUNES', help='Attempt brute force decryption on runes')
+# ... Add more arguments as needed
+
+# Parse the arguments
+args = parser.parse_args()
+
 # Ensure you have NLTK data downloaded:
 # import nltk
 # nltk.download('words')
@@ -18,12 +37,39 @@ def setup_nltk():
 # Call the setup function at the beginning of the script
 setup_nltk()
 
+from collections import Counter
+
+# Function to calculate letter frequencies in the text
+def calculate_frequencies(text):
+    # Remove non-alphabetic characters and convert to uppercase
+    text = ''.join(filter(str.isalpha, text.upper()))
+    # Calculate the frequency of each letter
+    frequencies = Counter(text)
+    total = sum(frequencies.values())
+    # Convert counts to percentages
+    frequencies = {letter: count / total for letter, count in frequencies.items()}
+    return frequencies
+    
 import itertools
 import string
 from sympy import isprime, primerange
 from nltk.corpus import words
 from nltk.metrics.distance import edit_distance
 from math import gcd
+import argparse
+
+# Create the parser
+parser = argparse.ArgumentParser(description='Rune Cipher Swiss Army Knife')
+
+# ... (add other arguments you already have)
+
+# Add an argument for frequency analysis
+parser.add_argument('-f', '--frequency-analysis', metavar='CIPHERTEXT', help='Perform frequency analysis on the ciphertext')
+
+# ... (add any other arguments you want to include)
+
+# Parse the arguments
+args = parser.parse_args()
 
 def get_multiline_input(prompt):
     print(prompt)
@@ -34,7 +80,7 @@ def get_multiline_input(prompt):
             break
         lines.append(line)
     return ' '.join(lines)
- 
+
 # Mapping of runes to decimal values based on the provided table
 rune_to_decimal = {
     'ᚠ': 0, 'ᚢ': 1, 'ᚦ': 2, 'ᚩ': 3, 'ᚱ': 4, 'ᚳ': 5, 'ᚷ': 6, 'ᚹ': 7, 'ᚻ': 8, 'ᚾ': 9, 'ᛁ': 10, 'ᛄ': 11,
@@ -55,6 +101,36 @@ futhark_to_english = {
 # Reverse mapping for English transliteration to runes
 english_to_futhark = {v: k for k, v in futhark_to_english.items()}
 
+def print_usage_guide():
+    print("Welcome to the Rune Cipher Swiss Army Knife!")
+    print("This tool allows you to perform various cipher operations with runes.")
+    print("\nUsage:")
+    print("1. Transliterate English to Runes: Provide English text to convert it into runes.")
+    print("2. Transliterate Runes to English: Provide runes to convert them back to English text.")
+    print("3. Decrypt Runes with Atbash Cipher: Provide runes and a shift value to decrypt using the Atbash cipher.")
+    print("4. Decrypt Runes with Vigenère Cipher: Provide runes and a key to decrypt using the Vigenère cipher.")
+    print("5. Encrypt Text with Caesar Cipher: Provide text and a shift value to encrypt using the Caesar cipher.")
+    print("6. Decrypt Text with Caesar Cipher: Provide encrypted text and a shift value to decrypt.")
+    print("7. Encrypt/Decrypt Text with Playfair Cipher: Provide text and a keyword for the Playfair cipher.")
+    print("8. Brute-force Decryption: Provide runes to attempt brute-force decryption.")
+    print("9. Frequency Analysis: Provide ciphertext to analyze the frequency of letters.")
+    print("\nYou can also use command-line arguments to directly perform operations without the interactive menu.")
+    print("For example:")
+    print("python rune_cipher_tool.py --transliterate 'Hello World'")
+    print("python rune_cipher_tool.py --atbash 'ᚦᛖ-ᛚᚩᛋᛋ-ᚩᚠ-ᛞᛁᚢᛁᚾᛁᛏᚣ' 5")
+    print("\nFor more information on command-line arguments, use the --help flag.")
+    print("python rune_cipher_tool.py --help")
+
+# Function to perform frequency analysis on the ciphertext
+def frequency_analysis(ciphertext):
+    frequencies = calculate_frequencies(ciphertext)
+    # Sort the frequencies in descending order
+    sorted_frequencies = sorted(frequencies.items(), key=lambda item: item[1], reverse=True)
+    # Print the frequencies
+    print("Letter frequencies in the ciphertext:")
+    for letter, frequency in sorted_frequencies:
+        print(f"{letter}: {frequency:.2%}")
+        
 # Function to transliterate text to runes
 def transliterate_to_futhark(text):
     # Create the reverse mapping from English to runes
@@ -344,6 +420,28 @@ def attempt_all_brute_force(runes):
 
 # Main function with additional brute-force option
 def main():
+# Check if any arguments were provided
+    if args.transliterate:
+        result = transliterate_to_futhark(args.transliterate)
+        print(f"Transliterated text: {result}")
+    
+    elif args.reverse_transliterate:
+        english_text, decimal_values = transliterate_and_convert(args.reverse_transliterate)
+        print(f"Transliterated English text: {english_text}")
+        print(f"Decimal values: {' '.join(decimal_values)}")
+    
+    elif args.atbash:
+        runes, shift = args.atbash
+        result = decrypt_atbash(runes, int(shift))
+        print(f"Decrypted text: {result}")
+    # ... Handle other arguments similarly
+
+    # If no command-line arguments were provided, print the usage guide and show the menu
+    if len(sys.argv) == 1:
+        print_usage_guide()
+        
+    else:
+        # If no arguments were provided, show the menu as before
     print("Welcome to the Rune Cipher Swiss Army Knife!")
     print("Choose an operation from the following options:")
     print("1 - Transliterate English to Runes (Transliteration)")
@@ -358,14 +456,15 @@ def main():
     print("10 - Brute-force Decryption with User-Provided Key (Vigenère Cipher)")
     print("11 - Attempt All Brute Force Methods (Decryption)")
     choice = input("Enter your choice (1-11): ")
-
-    choice = input("Enter your choice (1-9): ")
-
+    
+    elif args.frequency_analysis:
+        frequency_analysis(args.frequency_analysis)
+    
     if choice == '1':
         text = get_multiline_input("Enter the English text to transliterate to runes (end with an empty line):")
         result = transliterate_to_futhark(text)
         print(f"Transliterated text: {result}")
-
+    
     elif choice == '2':
         runes = get_multiline_input("Enter the runes to transliterate to English (end with an empty line):")
         english_text, decimal_values = transliterate_and_convert(runes)
